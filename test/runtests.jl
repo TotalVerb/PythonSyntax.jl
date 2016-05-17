@@ -1,5 +1,8 @@
 using PythonSyntax
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+include("arithmetic.jl")
+include("io.jl")
+include("functions.jl")
+include("classes.jl")
+include("stl.jl")
