@@ -12,7 +12,6 @@ script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - export PYTHON=""
   - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("python=3.5")'
-  - julia -e 'Pkg.build("PyCall")'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("PythonSyntax"); Pkg.test("PythonSyntax"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
