@@ -9,98 +9,11 @@ include("symbol.jl")
 include("ops.jl")
 include("function.jl")
 include("class.jl")
+include("expr.jl")
+include("control.jl")
 
 export pyparse, @pysyntax_str, @pymodule_str
 
-
-function transpileassign(t, aug=:(=))
-    targets = transpile.(t[:targets])
-    lhs = if length(targets) == 1
-        targets[1]
-    else
-        Expr(:tuple, targets...)
-    end
-
-    Expr(:(=), lhs, transpile(t[:value]))
-end
-
-
-function transpilefor(t)
-    if length(t[:orelse]) > 0
-        error("PythonSyntax cannot currently handle else for loops.")
-    end
-    quote
-        for $(transpile(t[:target])) in $(transpile(t[:iter]))
-            $(transpile(t[:body]))
-        end
-    end
-end
-
-function transpilewhile(t)
-    if length(t[:orelse]) > 0
-        error("PythonSyntax cannot currently handle else for loops.")
-    end
-    quote
-        while $(transpile(t[:test]))
-            $(transpile(t[:body]))
-        end
-    end
-end
-
-function transpilewith(t)
-    # FIXME: support
-    error("PythonSyntax does not yet support with.")
-end
-
-function transpileraise(t)
-    if t[:exc] == nothing
-        quote error() end
-    else
-        quote throw($(transpile(t[:exc]))) end
-    end
-end
-
-function transpiletry(t)
-    # FIXME: support
-    error("PythonSyntax does not yet support try.")
-end
-
-function transpilecmp(t)
-    args = Any[transpile(t[:left])]
-    for (op, val) in zip(t[:ops], t[:comparators])
-        push!(args, jlop(op), transpile(val))
-    end
-    Expr(:comparison, args...)
-end
-
-function transpileslice(t)
-    @match pytypeof(t) begin
-        ast.Slice => [Expr(:(:),
-                t[:lower] == nothing ? 1 : transpile(t[:lower]),
-                t[:step] == nothing  ? 1 : transpile(t[:step]),
-                t[:upper] == nothing ? :end : transpile(t[:upper]))]
-        ast.ExtSlice => transpileslice.(t[:dims])
-        ast.Index => [transpile(t[:value])]
-    end
-end
-
-transpilerawcall(t) = Expr(:call, transpile(t[:func]), transpile.(t[:args])...)
-
-"""
-Transpiles a call. Traps some dunder names, like __jl_macro__.
-"""
-function transpilecall(t)
-    if pytypeof(t[:func]) == ast.Name
-        @match t[:func][:id] begin
-            "__jlmc__" => Expr(:macrocall,
-                    Symbol('@', jlident(t[:args][1][:id])),
-                    transpile.(t[:args][2:end])...)
-            _ => transpilerawcall(t)
-        end
-    else
-        transpilerawcall(t)
-    end
-end
 
 function transpile(s::Symbol, t::Vector)
     Expr(s, transpile.(t)...)
@@ -117,7 +30,7 @@ function transpile(t::PyObject)
         ast.Return => Expr(:return, transpile(t[:value]))
         ast.Delete => error("Delete not yet supported.")
         ast.Assign => transpileassign(t)
-        ast.AugAssign => transpileassign(t, jlaugop(t[:op]))
+        ast.AugAssign => transpileaugassign(t)
         ast.For => transpilefor(t)
         ast.AsyncFor => transpilefor(t)  # FIXME: async
         ast.While => transpilewhile(t)

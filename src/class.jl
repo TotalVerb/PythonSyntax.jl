@@ -123,10 +123,8 @@ function transpilecls(t)
     fields = sort(collect(guessfields(t)))
 
     # Get the inner constructors and body methods
-    inner = map(x -> transpileinit(x, clsname),
-            filter(isconstructor, t[:body]))
-    body = map(x -> transpilemethod(x, clsname),
-            filter(ismethod, t[:body]))
+    inner = map(x -> transpileinit(x, clsname), filter(isconstructor, t[:body]))
+    body = map(x -> transpilemethod(x, clsname), filter(ismethod, t[:body]))
 
     quote
         type $clsname

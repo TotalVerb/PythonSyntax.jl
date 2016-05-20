@@ -35,7 +35,7 @@ end
 
 """Return Julia augmented version of Python operator."""
 function jlaugop(t)
-    jlident(jlop(t), :(=))
+    Symbol(jlop(t), :(=))
 end
 
 """Return symbol for Julia boolean operator."""

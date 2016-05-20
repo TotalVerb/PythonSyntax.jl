@@ -1,6 +1,4 @@
-function kw(args)
-    Expr(:parameters, args...)
-end
+kw(args) = Expr(:parameters, args...)
 
 var(args, ::Void) = args
 var(args, vararg) = [args; [Expr(:(...), vararg)]]
@@ -73,7 +71,7 @@ end
 function transpilefn(t)
     fnbody = transpile(t[:body])
 
-    kw, a = transpileargs(t[:args])
+    a, kw = transpileargs(t[:args])
     fnheader = header(a, kw)
     Expr(:function, fnheader, fnbody)
 end
