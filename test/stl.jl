@@ -54,10 +54,10 @@ def bisect_right(a, x, lo=1, hi=None):
     return lo
 
 # Tests
-__jlmc__(test, insort_right([1, 2, 4, 5, 6], 3) == [1, 2, 3, 4, 5, 6])
-__jlmc__(test, insort_right([1, 3, 4, 5, 6], 9) == [1, 3, 4, 5, 6, 9])
-__jlmc__(test, insort_right([1, 5, 5, 5, 6], 0) == [0, 1, 5, 5, 5, 6])
-__jlmc__(test, insort([], 1) == [1])
+__mc__(test, insort_right([1, 2, 4, 5, 6], 3) == [1, 2, 3, 4, 5, 6])
+__mc__(test, insort_right([1, 3, 4, 5, 6], 9) == [1, 3, 4, 5, 6, 9])
+__mc__(test, insort_right([1, 5, 5, 5, 6], 0) == [0, 1, 5, 5, 5, 6])
+__mc__(test, insort([], 1) == [1])
 """
 
 end

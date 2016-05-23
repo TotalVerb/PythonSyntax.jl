@@ -39,14 +39,25 @@ end
 transpilerawcall(t) = Expr(:call, transpile(t[:func]), transpile.(t[:args])...)
 
 """
-Transpiles a call. Traps some dunder names, like __jl_macro__.
+Transpiles a call. Traps some dunder names, like __mc__.
 """
 function transpilecall(t)
     if pytypeof(t[:func]) == ast.Name
         @match t[:func][:id] begin
-            "__jlmc__" => Expr(:macrocall,
-                    Symbol('@', jlident(t[:args][1][:id])),
+            "__jl__" => begin
+                @assert length(t[:args]) == 1
+                @assert pyisinstance(t[:args][1], ast.Str)
+                parse(t[:args][1][:s])
+            end
+            "__mc__" => begin
+                @assert length(t[:args]) ≥ 1
+                mac = t[:args][1]
+                args = t[:args][2:end]
+                @assert pyisinstance(t[:args][1], ast.Name)
+                Expr(:macrocall,
+                    Symbol('@', jlident(mac[:id])),
                     transpile.(t[:args][2:end])...)
+            end
             _ => transpilerawcall(t)
         end
     else

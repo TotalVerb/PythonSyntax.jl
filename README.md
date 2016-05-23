@@ -36,3 +36,13 @@ FizzBuzz.fizzbuzz(10)
 ```
 
 Remember: this is Julia, not Python. The syntax is Pythonic but the semantics are Julian.
+
+## Rewriting
+Some identifiers are rewritten. Currently, the only rewriting is that `_b` suffixes in Python get mapped to `!` suffixes in Julia.
+
+## Magic Syntax
+
+`PythonSyntax` introduces some magic syntax that is unlike anything else in the Python language.
+
+ * `__jl__("2:2:10")` escapes to Julia syntax. This can be useful if something has no clean way of being expressed pythonically. Note that this is not a runtime method: only string literals, and not strings computed at runtime, can be used.
+ * `__mc__(time, [i**2 for i in range(1, 10)])` allows calling Julia macros. Any number of arguments can be provided; they are given to the macro as expressions and are not evaluated, exactly as in Julia.
