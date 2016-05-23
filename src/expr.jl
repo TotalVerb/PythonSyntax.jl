@@ -1,3 +1,16 @@
+function transpilegen(gen)
+    if !isempty(gen[:ifs])
+        throw(ArgumentError("conditionals not supported in comprehensions"))
+    end
+    Expr(:(=), transpile(gen[:target]), transpile(gen[:iter]))
+end
+
+function transpilecomp(comp)
+    Expr(:comprehension,
+            transpile(comp[:elt]),
+            transpilegen.(comp[:generators])...)
+end
+
 function transpileassign(t)
     targets = transpile.(t[:targets])
     lhs = if length(targets) == 1

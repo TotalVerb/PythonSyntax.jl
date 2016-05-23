@@ -20,7 +20,7 @@ FizzBuzz
 
 def fizzbuzz(n):
     # this is still Julia, even though it looks like Python!
-    # so range includes both endpoints
+    # so range includes 1 and has length n — very different from Python.
     for i in range(1, n):
         if i % 15 == 0:
             println("FizzBuzz")
