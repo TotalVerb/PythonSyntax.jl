@@ -5,6 +5,8 @@ using Match
 
 @pyimport ast
 
+include("meta.jl")
+
 include("symbol.jl")
 include("ops.jl")
 include("function.jl")
@@ -97,7 +99,7 @@ end
 
 transpile(t::Vector) = Expr(:block, transpile.(t)...)
 
-pyparse(s::AbstractString) = transpile(ast.parse(s))
+pyparse(s::AbstractString) = simplify(transpile(ast.parse(s)))
 
 macro pysyntax_str(str)
     pyparse(str) |> esc
