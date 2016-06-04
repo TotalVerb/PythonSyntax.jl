@@ -72,10 +72,13 @@ function transpile(t::PyObject)
         ast.Set => :(Set($(transpile(:vect, t[:elts]))))
         ast.ListComp => transpilecomp(t)
         ast.SetComp => :(Set($(transpilecomp(t))))
-        ast.DictComp =>
-            error("Dictionary comprehensions are not yet supported.")
-        ast.GeneratorExp =>
-            error("Generators are not yet supported.")
+        ast.DictComp => Expr(:call, :Dict,
+                Expr(:generator,
+                    Expr(:(=>), transpile(t[:key]), transpile(t[:value])),
+                    transpilegen.(t[:generators])...))
+        ast.GeneratorExp => Expr(:generator,
+                transpile(t[:elt]),
+                transpilegen.(t[:generators])...)
         ast.Await || ast.Yield || ast.YieldFrom =>
             error("Generators are not yet supported.")
         ast.Compare => transpilecmp(t)
