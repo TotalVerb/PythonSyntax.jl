@@ -6,9 +6,17 @@
 
 [![codecov.io](http://codecov.io/github/TotalVerb/PythonSyntax.jl/coverage.svg?branch=master)](http://codecov.io/github/TotalVerb/PythonSyntax.jl?branch=master)
 
-This package is under heavy development and anything might change at any time. It also currently doesn't work on any release version of Julia. A nightly build is required in the meantime.
+This package is under development and anything might change at any time. It also currently doesn't work on any release version of Julia, except for 0.5.2.
+
 
 PythonSyntax.jl is a little like [LispSyntax.jl](https://github.com/swadey/LispSyntax.jl), where this package gets its inspiration. But this isn't lisp syntax, it's Python syntax.
+
+You need to use Python 3 with, e.g. by (and then restarting Julia after):
+
+```
+ENV["PYTHON"] = "/usr/bin/python3"
+Pkg.build("PyCall")
+```
 
 The easiest way to use this package is to define modules:
 
